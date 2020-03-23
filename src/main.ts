@@ -18,7 +18,7 @@ const corsOptions = {
 async function bootstrap() {
 
   const app = await NestFactory.create(ApplicationModule);
-  app.use(cors(corsOptions));
+  // app.use(cors(corsOptions));
   app.use(bodyParser.json({limit: '50mb'}));
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new RequestExceptionFilter(), new DefaultExceptionFilter());
