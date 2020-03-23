@@ -11,7 +11,7 @@ import * as bodyParser from 'body-parser';
 
 const corsOptions = {
   origin: 'https://guzva.djnd.si',
-  credentials: true,
+  credentials: false,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
