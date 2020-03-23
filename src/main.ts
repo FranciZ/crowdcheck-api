@@ -10,7 +10,7 @@ import { TeamGuard } from './guards/team.guard';
 import * as bodyParser from 'body-parser';
 
 const corsOptions = {
-  origin: ['http://10.0.0.11:8100', 'http://localhost:8100'],
+  origin: ['http://10.0.0.11:8100', 'http://localhost:8100', 'https://guzva.djnd.si/'],
   credentials: true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -18,7 +18,7 @@ const corsOptions = {
 async function bootstrap() {
 
   const app = await NestFactory.create(ApplicationModule);
-  // app.use(cors(corsOptions));
+  app.use(cors(corsOptions));
   app.use(bodyParser.json({limit: '50mb'}));
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new RequestExceptionFilter(), new DefaultExceptionFilter());
