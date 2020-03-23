@@ -10,8 +10,8 @@ import { TeamGuard } from './guards/team.guard';
 import * as bodyParser from 'body-parser';
 
 const corsOptions = {
-  origin: ['http://10.0.0.11:8100', 'http://localhost:8100', 'https://guzva.djnd.si'],
-  credentials: false,
+  origin: 'https://guzva.djnd.si',
+  credentials: true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
