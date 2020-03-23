@@ -38,6 +38,8 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file', multerOptions))
   async uploadFile(@Body() body, @UploadedFile() file, @Query() queryParams): Promise<any> {
 
+    console.log('File upload');
+
     const FileModel = getModelForClass(File);
     const fileDocument = new FileModel(body);
 
