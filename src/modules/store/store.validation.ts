@@ -1,7 +1,7 @@
 import {
   IsDefined,
   IsString,
-  IsNumber, IsBoolean, IsEnum, IsArray, ArrayContains
+  IsNumber, IsBoolean, IsEnum, IsArray, ArrayContains, Allow
 } from 'class-validator';
 import { StoreBusyStatus } from "./store.enum";
 import { File } from "../file/file.entity";
@@ -40,4 +40,11 @@ export class VStoreUpdate {
 
   @IsDefined() @IsArray()
   photos: Array<File>;
+}
+
+export class VGetUpdated {
+
+  @Allow() @IsString()
+  page: string;
+
 }

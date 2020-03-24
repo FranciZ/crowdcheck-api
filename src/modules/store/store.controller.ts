@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { AuthenticatedUser } from '../../guards/authenticated-user.decorator';
 import { UserService } from "../user/user.service";
 import { Roles } from "../../guards/roles.decorator";
 import { User, UserRole } from "../user/user.entity";
-import { VNearbyStores, VStore, VStoreUpdate } from "./store.validation";
+import { VGetUpdated, VNearbyStores, VStore, VStoreUpdate } from "./store.validation";
 import { IStoreJson } from "./store.interaface";
 
 @Controller()
@@ -32,6 +32,19 @@ export class StoreController {
   @Post('v1/stores/:storeId/update')
   async publishUpdate(@Body() update: VStoreUpdate, @Param('storeId') storeId: string): Promise<any> {
     return this.storeService.publishUpdate(storeId, update);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Get('v1/stores/updates')
+  async getUpdatedStores(@Query() data: VGetUpdated): Promise<any> {
+    return this.storeService.getUpdatedStores(data.page);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Delete('v1/stores/:storeId/history/:historyId')
+  async deleteHistoryItem(@Param('storeId') storeId: string,
+                          @Param('historyId') historyId: string): Promise<any> {
+    return this.storeService.deleteHistoryItem(storeId, historyId);
   }
 
 }

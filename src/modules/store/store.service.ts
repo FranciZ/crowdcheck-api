@@ -5,9 +5,13 @@ import { getModelForClass } from "@typegoose/typegoose";
 import { IStoreJson } from "./store.interaface";
 import * as crypto from 'crypto';
 import { ModelType, ReturnModelType } from "@typegoose/typegoose/lib/types";
+import { FileService } from "../file/file.service";
 
 @Injectable()
 export class StoreService {
+
+  constructor(private fileService: FileService) {
+  }
 
   async getStoresNearLocation(bottomLat: string, bottomLng: string, topLat: string, topLng: string) {
 
@@ -52,6 +56,68 @@ export class StoreService {
 
   }
 
+  async getUpdatedStores(page: string) {
+
+    const StoreModel = getModelForClass(Store);
+
+    let sliceArray = ['$history', 0, 10];
+
+    if (page) {
+      const pageNum = Number(page) - 1;
+      if (pageNum > 0) {
+        const pageSize = 10;
+        sliceArray = ['$history', pageNum * pageSize, pageNum * pageSize + pageSize];
+      }
+    }
+
+    const result = await StoreModel.aggregate([
+      {
+        $match: {
+          lastUserPostDate: {$exists: true, $ne: null, $lt: new Date()},
+        }
+      },
+      {$unwind: '$history'},
+      {$sort: {'history.createdAt': -1}},
+      {
+        $group: {
+          _id: null,
+          history: {$push: '$history'},
+          myCount: {$sum: 1}
+        }
+      },
+      {
+        $project: {
+          history: {
+            $slice: sliceArray
+          },
+          resultCount: '$myCount'
+        }
+      }
+    ]);
+
+    return StoreModel.populate(result, 'history.photos');
+
+  }
+
+  async deleteHistoryItem(storeId: string, historyId: string) {
+
+    const StoreModel = getModelForClass(Store);
+
+    const store: Store = await StoreModel.findOne({_id: storeId}).populate('history.photos');
+    const history = store.history.filter((h) => String(h._id) === historyId)[0];
+    if (history) {
+      const deleteResult = await this.fileService.deleteFile(history.photos[0]);
+      console.log('Delete result: ', deleteResult);
+    }
+
+    return StoreModel.update({_id: storeId}, {
+      $pull: {
+        history: {_id: historyId}
+      }
+    });
+
+  }
+
   async publishUpdate(storeId, update: VStoreUpdate) {
 
     const StoreModel = getModelForClass(Store);
@@ -59,13 +125,15 @@ export class StoreService {
 
     const updateDoc = new UserStoreUpdateModel({
       status: update.status,
-      photos: update.photos
+      photos: update.photos,
+      store: storeId
     });
 
     await StoreModel.update({_id: storeId}, {
       $push: {
         history: updateDoc
-      }
+      },
+      lastUserPostDate: new Date()
     });
 
     return await updateDoc.populate('photos').execPopulate();

@@ -28,9 +28,6 @@ export class VFirebaseUpdate {
 }
 
 export class VRegister {
-  @IsDefined() @IsString()
-  uid: string;
-
   @Allow() @IsString()
   firebaseToken: string;
   @Allow() @IsString()

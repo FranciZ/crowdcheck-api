@@ -30,11 +30,11 @@ export class CryptUtil {
 
     return jwt.sign(
       {
-        uid: data.uid,
+        email: data.uid,
         _id: data._id
       } as object,
       jwtSecret,
-      {expiresIn: '14d'},
+      {expiresIn: '150d'},
     );
 
   }

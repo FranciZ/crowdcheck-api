@@ -4,7 +4,7 @@ import { StoreBusyStatus } from "./store.enum";
 import { File } from "../file/file.entity";
 import * as upsertMany from '@meanie/mongoose-upsert-many';
 
-export class UserStoreUpdate extends Typegoose{
+export class UserStoreUpdate extends Typegoose {
 
   _id?: string;
 
@@ -16,6 +16,9 @@ export class UserStoreUpdate extends Typegoose{
 
   @arrayProp({ref: 'File'})
   photos?: Ref<File>[];
+
+  @prop({ref: 'Store'})
+  store: Ref<Store>;
 
 }
 
